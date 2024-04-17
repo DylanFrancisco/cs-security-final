@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
+<body>
+  <form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" autocomplete="off" /><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" /><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <script>
+    // Temporary in-memory 'database' for user credentials
+    const users = {
+      'godester': 'saba',
+      'dyl': 'dog' // Add a second user
+    };
+  
+    document.getElementById('loginForm').onsubmit = function(e) {
+      e.preventDefault();
+      let username = document.getElementById('username').value;
+      let password = document.getElementById('password').value;
+      
+      // Authentication check against the 'users' object
+      if (users[username] && users[username] === password) {
+        // You should assign a user identifier here, such as a user ID
+        sessionStorage.setItem('username', username); // Store the username in the session
+        window.location.href = '/chat.html'; // Redirect to chat page
+      } else {
+        alert('Invalid username or password. Please try again.');
+      }
+    };
+  </script>    
+</body>
+</html>
+
