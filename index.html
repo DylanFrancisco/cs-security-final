@@ -6,7 +6,7 @@
   <title>Login</title>
 </head>
 <body>
-  <!-- Login Form -->
+  <!-- Login -->
   <form id="loginForm">
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" autocomplete="off" required><br>
@@ -15,7 +15,7 @@
     <button type="submit">Login</button>
   </form>
 
-  <!-- Verification Code Form, initially hidden -->
+  <!-- Verification Code Form -->
   <form id="verifyForm" style="display:none;">
     <label for="code">Verification Code:</label>
     <input type="text" id="code" name="code" autocomplete="off" required><br>
@@ -34,18 +34,18 @@
         body: JSON.stringify({ username, password })
       })
       .then(response => {
-        if (!response.ok) { // Check if the response status is not OK (200)
-          throw new Error('Failed to login'); // This will handle any non-200 response.
+        if (!response.ok) { 
+          throw new Error('Failed to login'); 
         }
         return response.json();
       })
       .then(data => {
-        alert(data.message); // Alert the user
+        alert(data.message); 
         document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('verifyForm').style.display = 'block'; // Show the verification form only if login was successful
+        document.getElementById('verifyForm').style.display = 'block';
       })
       .catch(error => {
-        alert('Invalid credentials, please try again.'); // Alert the user to invalid credentials
+        alert('Invalid credentials, please try again.'); 
         console.error('Error:', error);
       });
     };
@@ -62,23 +62,22 @@
   })
   .then(response => {
     if (!response.ok) {
-      // If server response is not OK, throw an error
       throw new Error('Verification failed');
     }
-    return response.json(); // Convert response payload to JSON
+    return response.json();
   })
   .then(data => {
     if (data.success) {
-      // If verification is successful, redirect to chat page
+      // Verification successful
       window.location.href = '/chat.html';
     } else {
-      // If verification failed, alert the user
+      // Verification failed
       alert(data.message);
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('Verification failed, please try again.'); // Handle verification failure
+    alert('Verification failed, please try again.');
   });
 };
 </script>

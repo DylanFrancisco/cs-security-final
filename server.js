@@ -37,13 +37,12 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/verify-code', (req, res) => {
-  const { username, code } = req.body; // Extract username and code from the request body
+  const { username, code } = req.body;
   const user = users[username];
 
-  if (user && user.code === parseInt(code, 10)) { // Check if the code matches
+  if (user && user.code === parseInt(code, 10)) {
       res.json({ success: true, message: "Code verified successfully!" });
   } else {
-      // Respond with an error if the code does not match
       res.status(401).json({ success: false, message: "Invalid verification code." });
   }
 });
@@ -54,7 +53,6 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
   socket.on('chat message', (data) => {
-    // Emit the message and username to all clients
     io.emit('chat message', data);
   });
 });

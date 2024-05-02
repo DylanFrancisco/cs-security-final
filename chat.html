@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -15,22 +16,31 @@
 
   <script>
     const socket = io();
+    const secretKey = 'sabaaa';  
 
     document.querySelector('form').onsubmit = function(e) {
       e.preventDefault();
       const messageInput = document.getElementById('m');
       const usernameInput = document.getElementById('username');
       const message = messageInput.value;
-      const username = usernameInput.value || 'Anonymous';  // Default to 'Anonymous' if no name entered
+      const username = usernameInput.value
 
-      socket.emit('chat message', { username, message });
+      // Encryption
+      const encryptedMessage = CryptoJS.AES.encrypt(message, secretKey).toString();
+
+      socket.emit('chat message', { username, message: encryptedMessage });
       messageInput.value = '';
       return false;
     };
 
     socket.on('chat message', function(data) {
       const item = document.createElement('li');
-      item.textContent = `${data.username}: ${data.message}`; // Display username with message
+      
+      // Decryption
+      const bytes = CryptoJS.AES.decrypt(data.message, secretKey);
+      const decryptedMessage = bytes.toString(CryptoJS.enc.Utf8);
+
+      item.textContent = `${data.username}: ${decryptedMessage}`; 
       document.getElementById('messages').appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
     });
