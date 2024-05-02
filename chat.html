@@ -5,40 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App</title>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const socket = io();
-
-      const username = sessionStorage.getItem('username'); 
-
-      document.querySelector('form').onsubmit = function(e) {
-        e.preventDefault();
-        let messageInput = document.getElementById('m');
-        if (messageInput.value) {
-            
-          socket.emit('chat message', { user: username, msg: messageInput.value });
-          messageInput.value = '';
-        }
-        return false;
-      };
-
-      socket.on('chat message', function(data) {
-        let item = document.createElement('li');
-        if (data.user === username) {
-          item.textContent = 'Me: ' + data.msg;
-        } else {
-          item.textContent = data.user + ': ' + data.msg;
-        }
-        document.getElementById('messages').appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-    });
-  </script>
 </head>
 <body>
   <ul id="messages"></ul>
   <form action="">
     <input id="m" autocomplete="off" /><button>Send</button>
   </form>
+
+  <script>
+    const socket = io();
+
+    document.querySelector('form').onsubmit = function(e) {
+      e.preventDefault();
+      let message = document.getElementById('m').value;
+      socket.emit('chat message', message);
+      document.getElementById('m').value = '';
+      return false;
+    };
+
+    socket.on('chat message', function(msg) {
+      let item = document.createElement('li');
+      item.textContent = msg;
+      document.getElementById('messages').appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  </script>
 </body>
 </html>

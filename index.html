@@ -6,36 +6,78 @@
   <title>Login</title>
 </head>
 <body>
+  <!-- Login Form -->
   <form id="loginForm">
     <label for="username">Username:</label>
-    <input type="text" id="username" autocomplete="off" /><br>
+    <input type="text" id="username" name="username" autocomplete="off" required><br>
     <label for="password">Password:</label>
-    <input type="password" id="password" /><br>
+    <input type="password" id="password" name="password" required><br>
     <button type="submit">Login</button>
   </form>
 
+  <!-- Verification Code Form, initially hidden -->
+  <form id="verifyForm" style="display:none;">
+    <label for="code">Verification Code:</label>
+    <input type="text" id="code" name="code" autocomplete="off" required><br>
+    <button type="submit">Verify Code</button>
+  </form>
+
   <script>
-    // Temporary in-memory 'database' for user credentials
-    const users = {
-      'godester': 'saba',
-      'dyl': 'dog' // Add a second user
-    };
-  
     document.getElementById('loginForm').onsubmit = function(e) {
       e.preventDefault();
-      let username = document.getElementById('username').value;
-      let password = document.getElementById('password').value;
-      
-      // Authentication check against the 'users' object
-      if (users[username] && users[username] === password) {
-        // You should assign a user identifier here, such as a user ID
-        sessionStorage.setItem('username', username); // Store the username in the session
-        window.location.href = '/chat.html'; // Redirect to chat page
-      } else {
-        alert('Invalid username or password. Please try again.');
-      }
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      .then(response => {
+        if (!response.ok) { // Check if the response status is not OK (200)
+          throw new Error('Failed to login'); // This will handle any non-200 response.
+        }
+        return response.json();
+      })
+      .then(data => {
+        alert(data.message); // Alert the user
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('verifyForm').style.display = 'block'; // Show the verification form only if login was successful
+      })
+      .catch(error => {
+        alert('Invalid credentials, please try again.'); // Alert the user to invalid credentials
+        console.error('Error:', error);
+      });
     };
-  </script>    
+
+    document.getElementById('verifyForm').onsubmit = function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const code = document.getElementById('code').value;
+
+      fetch('/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, code })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Verification failed'); // Handle non-200 responses
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/chat.html'; // Redirect to chat page on successful verification
+        } else {
+          alert(data.message); // Alert the user to failure
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Verification failed, please try again.'); // Handle verification failure
+      });
+    };
+  </script>
 </body>
 </html>
-
