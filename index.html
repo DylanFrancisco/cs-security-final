@@ -51,33 +51,36 @@
     };
 
     document.getElementById('verifyForm').onsubmit = function(e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const code = document.getElementById('code').value;
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const code = document.getElementById('code').value;
 
-      fetch('/verify-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, code })
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Verification failed'); // Handle non-200 responses
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
-          window.location.href = '/chat.html'; // Redirect to chat page on successful verification
-        } else {
-          alert(data.message); // Alert the user to failure
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Verification failed, please try again.'); // Handle verification failure
-      });
-    };
-  </script>
+  fetch('/verify-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, code })
+  })
+  .then(response => {
+    if (!response.ok) {
+      // If server response is not OK, throw an error
+      throw new Error('Verification failed');
+    }
+    return response.json(); // Convert response payload to JSON
+  })
+  .then(data => {
+    if (data.success) {
+      // If verification is successful, redirect to chat page
+      window.location.href = '/chat.html';
+    } else {
+      // If verification failed, alert the user
+      alert(data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Verification failed, please try again.'); // Handle verification failure
+  });
+};
+</script>
 </body>
 </html>

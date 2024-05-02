@@ -9,7 +9,8 @@
 <body>
   <ul id="messages"></ul>
   <form action="">
-    <input id="m" autocomplete="off" /><button>Send</button>
+    <input type="text" id="username" placeholder="Enter your name" autocomplete="off" required /><br>
+    <input type="text" id="m" placeholder="Type a message" autocomplete="off" required /><button>Send</button>
   </form>
 
   <script>
@@ -17,15 +18,19 @@
 
     document.querySelector('form').onsubmit = function(e) {
       e.preventDefault();
-      let message = document.getElementById('m').value;
-      socket.emit('chat message', message);
-      document.getElementById('m').value = '';
+      const messageInput = document.getElementById('m');
+      const usernameInput = document.getElementById('username');
+      const message = messageInput.value;
+      const username = usernameInput.value || 'Anonymous';  // Default to 'Anonymous' if no name entered
+
+      socket.emit('chat message', { username, message });
+      messageInput.value = '';
       return false;
     };
 
-    socket.on('chat message', function(msg) {
-      let item = document.createElement('li');
-      item.textContent = msg;
+    socket.on('chat message', function(data) {
+      const item = document.createElement('li');
+      item.textContent = `${data.username}: ${data.message}`; // Display username with message
       document.getElementById('messages').appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
     });

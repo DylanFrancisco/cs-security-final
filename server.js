@@ -19,8 +19,8 @@ app.get('/chat.html', (req, res) => {
 });
 
 const users = {
-  'godester': { password: 'saba', email: 'acompleteoutplay@gmail.com', code: null },
-  'dyl': { password: 'dog', email: 'dyl@example.com', code: null }
+  'godester': { password: 'saba', email: 'ananya0911@gmail.com', code: null },
+  'dyl': { password: 'dog', email: 'acompleteoutplay@gmail.com', code: null }
 };
 
 app.post('/login', (req, res) => {
@@ -36,13 +36,26 @@ app.post('/login', (req, res) => {
   }
 });
 
+app.post('/verify-code', (req, res) => {
+  const { username, code } = req.body; // Extract username and code from the request body
+  const user = users[username];
+
+  if (user && user.code === parseInt(code, 10)) { // Check if the code matches
+      res.json({ success: true, message: "Code verified successfully!" });
+  } else {
+      // Respond with an error if the code does not match
+      res.status(401).json({ success: false, message: "Invalid verification code." });
+  }
+});
+
 io.on('connection', (socket) => {
   console.log('A user connected');
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
+  socket.on('chat message', (data) => {
+    // Emit the message and username to all clients
+    io.emit('chat message', data);
   });
 });
 
